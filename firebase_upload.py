@@ -4,16 +4,29 @@ import csv
 import os
 
 # Path to your service account key
-cred = credentials.Certificate("path/to/serviceAccountKey.json")
+cred = credentials.Certificate("serviceAccountKey.json")
 firebase_admin.initialize_app(cred)
 
 # Initialize Firestore (or Realtime Database if you prefer)
 db = firestore.client()
 
+def sanitize_header(header):
+    # Replace invalid characters in field names
+    return header.strip().replace(' ', '_').replace('/', '_').replace('.', '_')
+
 def read_csv(file_path):
     with open(file_path, mode='r') as file:
-        reader = csv.DictReader(file)  # Assuming your CSV has headers
-        return list(reader)
+        print(f"Processing {file_path}")
+        reader = csv.DictReader(file)
+        headers = reader.fieldnames
+        headers[0] = 'Index'
+        print(f"Headers: {headers}")
+        rows = []
+        for row in reader:
+            # print(f"Row: {row}")
+            sanitized_row = {sanitize_header(k): v for k, v in row.items()}
+            rows.append(sanitized_row)
+        return rows
 
 def read_csvs(directory):
     files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]

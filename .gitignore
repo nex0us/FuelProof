@@ -27,3 +27,4 @@ dist-ssr
 *.sln
 *.sw?
 src/firebase/firebase.js
+serviceAccountKey.json

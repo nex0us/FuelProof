@@ -1,1 +1,3 @@
 # FuelProof
+
+npm run dev

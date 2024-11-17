@@ -1,0 +1,14 @@
+/* index.css */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    background-color: #fcf7f1;
+}
+
+.inline-link {
+    @apply text-toyotared hover:text-black underline hover:no-underline cursor-pointer;
+}
+

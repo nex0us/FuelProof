@@ -5,7 +5,7 @@ import { useAuth } from "../contexts/authContext";
 function PrivateRoute({ children }) {
   const { currentUser } = useAuth();
   if (!currentUser) {
-    return <Navigate to="/dashboard" />;
+    return <Navigate to="/" />;
   }
 
   return children;

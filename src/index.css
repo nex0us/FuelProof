@@ -5,7 +5,7 @@
 @tailwind utilities;
 
 body {
-    background-color: #fcf7f1;
+    background-color: theme('colors.offwhite');
 }
 
 .inline-link {

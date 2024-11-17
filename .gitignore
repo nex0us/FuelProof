@@ -1,6 +1,5 @@
 .DS_store
-firebase.js
-auth.js
+.env
 
 # Logs
 logs

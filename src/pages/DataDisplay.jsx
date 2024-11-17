@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "../firebase/firebase"; // Import the Firestore instance
+// import { db } from "../firebase/firebase"; // Import the Firestore instance
 import { Grid2, Paper, Button } from "@mui/material";
 
 function DataDisplay() {

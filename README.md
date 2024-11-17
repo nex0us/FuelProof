@@ -1,4 +1,3 @@
 # FuelProof
-npm install vite
-npm install firebase
+npm install vite firebase express cors
 npm run dev

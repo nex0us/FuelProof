@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Grid2, Paper } from "@mui/material";
+import { LineChart } from "@mui/x-charts/LineChart";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "../firebase/firebase"; // Import your Firestore instance
 import { Chart, Line, Bar, Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -26,57 +26,43 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
-  const [chartData, setChartData] = useState(null); // To store the chart data from Firestore
+  const [data, setData] = useState([]);
+  const [err, setError] = useState([]);
 
   useEffect(() => {
-    const fetchChartData = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "fuel_economy"));
-        const data = [];
-        querySnapshot.forEach((doc) => {
-          data.push(doc.data()); // Assuming each doc contains the necessary chart data
-        });
-        // Prepare data for Chart.js
-        const labels = data.map((item) => item.label); // Example field
-        const values = data.map((item) => item.value); // Example field
-        console.log(values);
-        setChartData({
-          labels: labels,
-          datasets: [
-            {
-              label: "Dataset 1",
-              data: values,
-              borderColor: "rgba(75, 192, 192, 1)",
-              borderWidth: 1,
-              fill: false,
-            },
-          ],
-        });
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      }
+    const fetchData = async () => {
+        try {
+            const response = await fetch('localhost:3001/api/data');
+            const result = await response.json();
+            setData(result);
+        } catch (err) {
+            setError(err.message);
+        }
     };
 
-    fetchChartData();
+    fetchData();
+    console.log(data);
   }, []);
 
   return (
     <div className="ml-64 w-full p-4">
-      <Grid2 container spacing={3}>
-        <Grid2 item xs={12} sm={6}>
-          <Paper className="p-4">
-            {/* Render chart only if chartData is available */}
-            {chartData ? (
-              <Line data={chartData} />
-            ) : (
-              <p>Loading chart data...</p>
-            )}
-          </Paper>
-        </Grid2>
-        <Grid2 item xs={12} sm={6}>
-          <Paper className="p-4">Table</Paper>
-        </Grid2>
-      </Grid2>
+      {/* {data ? (
+        <LineChart
+          xAxis={[
+            {
+              dataKey: "Year",
+              min: 2021,
+              max: 2024,
+            },
+          ]}
+          series={[]}
+          dataset={data}
+          width={500}
+          height={300}
+        />
+      ) : (
+        <p>Loading chart data...</p>
+      )} */}
     </div>
   );
 };

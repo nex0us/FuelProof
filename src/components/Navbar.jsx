@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/authContext";
 
 function Navbar() {
-  const { logout } = useAuth();
+  const { logout, currentUser } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -16,29 +16,28 @@ function Navbar() {
   };
 
   return (
-    <div className="flex h-screen">
-      <aside className="w-64 bg-gray-800 text-white">
+    <div className='flex'>
+    <div className="flex h-screen fixed top-0 left-0 bottom-0">
+      <aside className="w-64 bg-toyotagray text-white border-r-4">
         <div className="p-4 font-bold text-xl">FuelProof</div>
         <nav>
           <ul>
-            <li className="p-3 hover:bg-gray-700">
-              <Link to="/dashboard">Home</Link>
+            <li className="p-3 hover:bg-toyotared">
+              <Link to="/dashboard">Main</Link>
             </li>
-            <li className="p-3 hover:bg-gray-700">
-              <Link to="#">Settings</Link>
+            <li className="p-3 hover:bg-toyotared">
+              <Link to="/data">Data Display</Link>
             </li>
-            <li className="p-3 hover:bg-gray-700">
-              <Link to="#">Profile</Link>
+            <li className="p-3 hover:bg-toyotared">
+              <Link to="#">Report</Link>
             </li>
-            <li className="p-3 hover:bg-gray-700">
+            <li className="p-3 hover:bg-toyotared">
               <Link onClick={handleLogout}>Logout</Link>
             </li>
           </ul>
         </nav>
       </aside>
-      <main className="flex-1 bg-gray-100 p-6">
-        <h1 className="text-2xl font-bold">Welcome to the Dashboard</h1>
-      </main>
+    </div>
     </div>
   );
 }

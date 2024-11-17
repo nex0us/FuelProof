@@ -1,59 +1,84 @@
-import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
-// import { db } from "../firebase/firebase"; // Import the Firestore instance
-import { Grid2, Paper, Button } from "@mui/material";
+import { useState, useEffect, useRef } from 'react';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import { InputText } from 'primereact/inputtext';
+import { Button } from 'primereact/button';
+import 'primereact/resources/primereact.min.css'; 
+import 'primereact/resources/themes/soho-light/theme.css'
+// primereact/resources/themes/tailwind-light/theme.css
+// primereact/resources/themes/lara-light-blue/theme.css
+// primereact/resources/themes/lara-light-indigo/theme.css
+// primereact/resources/themes/lara-light-purple/theme.css
+// primereact/resources/themes/lara-light-teal/theme.css
+// primereact/resources/themes/soho-light/theme.css
+// primereact/resources/themes/viva-light/theme.css
+// primereact/resources/themes/nano/theme.css
+// primereact/resources/themes/saga-blue/theme.css
+// primereact/resources/themes/saga-green/theme.css
+// primereact/resources/themes/saga-orange/theme.css
+// primereact/resources/themes/saga-purple/theme.css        
 
 function DataDisplay() {
-  const [data, setData] = useState([]);
-  const [sortOrder, setSortOrder] = useState("asc"); // State to track the sort order
+    const dtRef = useRef(null);
+    
+    // get data from db
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-  // Fetch data from Firestore when component mounts
-  useEffect(() => {
+    useEffect(() => {
+        fetchData();
+    }, []);
+
     const fetchData = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "dummy"));
-        const items = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setData(items);
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      }
+        try {
+            setLoading(true);
+            const response = await fetch("/api/data");
+            const result = await response.json();
+            setData(result);
+        } catch (err) {
+            setError('Failed to fetch data: ' + err.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    fetchData();
-  }, []);
+    console.log(data);
 
-  return (
-    <div>
-      <h1>Data from Firestore</h1>
-      <Grid2 container spacing={3}>
-        {data.length === 0 ? (
-          <p>Loading data...</p>
-        ) : (
-          data.map((item) => (
-            <Grid2 item xs={12} sm={6} key={item.id}>
-              <Paper className="p-4">
-                <div className="font-bold">Car Data:</div>
-                {Object.keys(item).map((key) => {
-                  // Skip the 'id' key if it exists
-                  if (key === "id") return null;
+    const footer = (
+        <div className="table-footer">
+            <Button
+                label="Generate Report"
+                icon="pi pi-upload"
+                onClick={() => dtRef.current.exportCSV()}
+                className="btn px-3 py-3"
+            />
+        </div>
+    );
 
-                  return (
-                    <div key={key}>
-                      <strong>{key.replace("car", "Car ")}: </strong>
-                      {item[key]}
-                    </div>
-                  );
-                })}
-              </Paper>
-            </Grid2>
-          ))
-        )}
-      </Grid2>
-    </div>
-  );
+    return (
+        <div className="ml-64 w-full p-4">
+            <h1 className="table-title">Fuel Economy Data - All Vehicles 2021-2024</h1>
+
+            <DataTable value={data} paginator rows={6} filterDisplay="row" showGridlines 
+                        scrollable style={{ maxWidth: '75%', overflowX: 'auto' }}
+                        ref={dtRef} footer={footer}
+            >
+                <Column field = "Manufacturer" header = "Manufacturer" sortable filter style={{ minWidth: '150px' }}></Column>
+                <Column field = "Model" header = "Model" sortable filter style={{ minWidth: '150px' }} ></Column>
+                <Column field = "Year" header = "Year" sortable filter style={{ minWidth: '150px' }}></Column>
+                <Column field = "Trans" header = "Trans" sortable filter style={{ minWidth: '150px' }}></Column>
+                <Column field = "Cyl" header = "Cyl" sortable filter style={{ minWidth: '150px' }}></Column>
+                <Column field = "Eng Size" header = "Eng Size" sortable filter style={{ minWidth: '150px' }}></Column>
+                <Column field = "MPG City" header = "MPG City" sortable filter style={{ minWidth: '150px' }}></Column>
+                <Column field = "MPG Hwy" header = "MPG Hwy" sortable filter style={{ minWidth: '150px' }}></Column>
+                <Column field = "MPG Comb" header = "MPG Comb" sortable filter style={{ minWidth: '150px' }}></Column>
+                <Column field = "Annual Fuel Cost" header = "Annual Fuel Cost" sortable filter style={{ minWidth: '150px' }}></Column>
+                <Column field = "GHG Rating" header = "GHG Rating" sortable filter style={{ minWidth: '150px' }}></Column>
+                <Column field = "Notes" header = "Notes" sortable filter style={{ minWidth: '150px' }}></Column>
+            </DataTable>
+        </div>
+    );
 }
 
 export default DataDisplay;

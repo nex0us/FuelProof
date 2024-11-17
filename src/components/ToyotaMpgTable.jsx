@@ -9,6 +9,7 @@ import {
   TableRow,
   TablePagination,
   TextField, // For the text input field
+  Typography,
 } from "@mui/material";
 
 const MpgTable = () => {
@@ -57,7 +58,18 @@ const MpgTable = () => {
   });
 
   return (
-    <Paper sx={{ padding: '20px' }}>
+    <Paper sx={{ padding: "20px" }}>
+      <Typography
+        variant="h6"
+        sx={{
+          marginBottom: "16px",
+          fontWeight: "bold",
+          textAlign: "center",
+          fontSize: "17px",
+        }}
+      >
+        Toyota MPG by Model & Year
+      </Typography>
       {/* Filter Input */}
       <TextField
         label="Search"
@@ -65,7 +77,9 @@ const MpgTable = () => {
         fullWidth
         value={filter}
         onChange={handleFilterChange}
-        sx={{ marginBottom: '20px' }}
+        sx={{
+          marginBottom: "10px",
+        }}
       />
 
       <TableContainer sx={{ overflowX: "auto" }}>

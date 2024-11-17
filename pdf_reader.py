@@ -2,6 +2,7 @@ import pdfplumber
 import os
 import csv
 import pandas as pd
+import time
 
 directory = "FEG_data_raw"
 
@@ -47,9 +48,6 @@ def read_pdfs(files):
                     right_column = page.within_bbox(right_bbox) # Crop right column
                     right_text = right_column.extract_text()
                     
-                    # print(left_text + right_text)
-                    # print(left_text)
-                    
                     # populate dataframe
                     # split text into lines
                     left_lines = left_text.splitlines()
@@ -58,6 +56,8 @@ def read_pdfs(files):
                     
                     # break when reach new section (will no longer have manufacturer as first line)
                     if left_lines[0] != 'Manufacturer':
+                        print("STOP HERE", page, file)
+                        time.sleep(3)
                         break
                     
                     
@@ -76,6 +76,11 @@ def read_pdfs(files):
                     notes = None
                     for line in range(5, len(left_lines)): # we know first 5 lines are just labels
                         print(left_lines[line], page, file)
+                        
+                        # skip rows with "see page..."
+                        if "See page" in left_lines[line]:
+                            continue
+                        
                         # check if current line is data, every data line has a $ in it
                         if "$" in left_lines[line]:
                             data = left_lines[line].split()
@@ -133,7 +138,12 @@ def read_pdfs(files):
                             # print("car model", car_model)
                             
                     for line in range(5, len(right_lines)): # we know first 5 lines are just labels  
-                        print(right_lines[line], page, file)                      
+                        print(right_lines[line], page, file)  
+                        
+                        # skip rows with "see page..."
+                        if "See page" in right_lines[line]:
+                            continue
+                                            
                         # check if current line is data, every data line has a $ in it
                         if "$" in right_lines[line]:
                             data = right_lines[line].split()
@@ -196,6 +206,9 @@ def read_pdfs(files):
                     # exit()
                     
                 # write to csv
+                # car type doesn't work correctly right now
+                df.drop("Car Type", axis = 1, inplace = True)
+                df['Year'] = file[-8:-4]
                 df.to_csv(csv_path)
 
 data = read_pdfs(files)

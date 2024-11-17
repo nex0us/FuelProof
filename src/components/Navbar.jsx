@@ -26,10 +26,7 @@ function Navbar() {
               <Link to="/dashboard">Main</Link>
             </li>
             <li className="p-3 hover:bg-toyotared">
-              <Link to="/data">Data Display</Link>
-            </li>
-            <li className="p-3 hover:bg-toyotared">
-              <Link to="#">Report</Link>
+              <Link to="/data">Report Generator</Link>
             </li>
             <li className="p-3 hover:bg-toyotared">
               <Link onClick={handleLogout}>Logout</Link>

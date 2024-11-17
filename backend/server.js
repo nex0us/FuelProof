@@ -31,6 +31,32 @@ app.get('/api/data', (req, res) => {
     });
 });
 
+app.get('/api/dashboard', (req, res) => {
+    const query = `
+        SELECT AVG("MPG Comb") AS "Avg MPG Comb", Year
+        FROM (
+            SELECT * FROM FEG2021
+            UNION ALL
+            SELECT * FROM FEG2022
+            UNION ALL
+            SELECT * FROM FEG2023
+            UNION ALL
+            SELECT * FROM FEG2024
+        ) AS CombinedTables
+        WHERE Manufacturer = 'TOYOTA'
+        GROUP BY Year;
+        `;
+    
+    db.all(query, [], (err, rows) => {
+        if (err) {
+            res.status(500).send({ error: err.message });
+        } else {
+            res.setHeader('Content-Type', 'application/json');
+            res.json(rows);
+        }
+    });
+});
+
 // Start server
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

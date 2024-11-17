@@ -19,7 +19,18 @@ const db = new sqlite3.Database('backend/fuel_economy.db', (err) => {
 
 // Route to fetch data
 app.get('/api/data', (req, res) => {
-    const query = 'SELECT * FROM FEG2021 LIMIT 10;';
+    const query = `
+        SELECT * 
+        FROM (
+            SELECT * FROM FEG2021
+            UNION ALL
+            SELECT * FROM FEG2022
+            UNION ALL
+            SELECT * FROM FEG2023
+            UNION ALL
+            SELECT * FROM FEG2024
+        ) AS CombinedTables;
+    `;
     
     db.all(query, [], (err, rows) => {
         if (err) {

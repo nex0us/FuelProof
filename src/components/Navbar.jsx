@@ -22,7 +22,7 @@ function Navbar() {
         <nav>
           <ul>
             <li className="p-3 hover:bg-gray-700">
-              <Link to="/">Home</Link>
+              <Link to="/dashboard">Home</Link>
             </li>
             <li className="p-3 hover:bg-gray-700">
               <Link to="#">Settings</Link>

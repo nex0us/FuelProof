@@ -12,3 +12,15 @@ body {
     @apply text-toyotared hover:text-black underline hover:no-underline cursor-pointer;
 }
 
+.table-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 16px;
+}
+
+.table-footer {
+    display: flex;
+    justify-content: center;
+    padding: 10px 0; /* Adds space around the footer */
+}

@@ -1,6 +1,7 @@
 import pdfplumber
 import os
 import csv
+import pandas as pd
 
 directory = "FEG_data_raw"
 
@@ -24,19 +25,94 @@ def read_pdfs(files):
             with open(csv_path, mode='w', newline='', encoding='utf-8') as csv_file:
                 csv_writer = csv.writer(csv_file)
                 header_written = False
-                # Iterate through all pages
-                for page in pdf.pages:
-                    table_settings = {
-                        'vertical_strategy': 'text',
-                        'horizontal_strategy': 'text',
-                        'intersection_tolerance': 5
-                    }
-                    tables = page.extract_tables(table_settings)
-                    for table in tables:
-                        if not header_written:
-                            csv_writer.writerow(table[0])  # Write header
-                            header_written = True
-                        for row in table[1:]:  # Skip header in subsequent pages
-                            csv_writer.writerow(row)
+                # Iterate through pages 12-end (page 12 is where data starts)
+                for page in pdf.pages[12:]:
+                    # define dataframe
+                    cols = ['Car Type', 'Manufacturer', 'Model', 'Trans', 'Eng Size', 'Cyl', 'MPG Comb', 'MPG City',
+                            'MPG Hwy', 'Annual Fuel Cost', 'GHG Rating', 'Notes']
+                    df = pd.DataFrame(columns = cols)
+                    
+                    # each page has 2 columns so need bounding boxes
+                    width = page.width
+                    height = page.height
+                    left_bbox = (0, 0, width / 2, height)
+                    right_bbox = (width / 2, 0, width, height)
+
+                    # Extract text from each column
+                    left_column = page.within_bbox(left_bbox) # crop left column
+                    left_text = left_column.extract_text()
+                    
+                    right_column = page.within_bbox(right_bbox) # Crop right column
+                    right_text = right_column.extract_text()
+                    
+                    # print(left_text + right_text)
+                    print(left_text)
+                    
+                    # populate dataframe
+                    # split text into lines
+                    left_lines = left_text.splitlines()
+                    right_lines = right_text.splitlines()
+                    # print(left_lines)
+                    
+                    # populate dataframe
+                    car_type = None
+                    manufacturer = None
+                    car_model = None
+                    trans = None
+                    eng_size = None 
+                    cyl = None 
+                    mpg_comb = None 
+                    mpg_city = None 
+                    mpg_hwy = None 
+                    cost = None 
+                    ghg = None 
+                    notes = None
+                    for line in range(5, len(left_lines)): # we know first 5 lines are just labels
+                        # check if current line is data, every data line has a $ in it
+                        if "$" in left_lines[line]:
+                            data = left_lines[line].split()
+                            trans = data[0][:-1]
+                            eng_size = data[1][:-1]
+                            cyl = data[2]
+                            mpg_comb = data[3]
+                            mpg_city = data[4][:data[4].index("/")]
+                            mpg_hwy = data[4][data[4].index("/") + 1:]
+                            cost = data[5]
+                            ghg = data[6]
+                            notes = data[7:]
+                        # if current line and next line all caps then that's a car type line
+                        elif left_lines[line].isupper() and left_lines[line+1].isupper() and left_lines[line+1].isalpha():
+                            car_type = left_lines[line]
+                            print(left_lines[line+1], left_lines[line+1].isupper())
+                            print("car type", car_type)
+                        elif left_lines[line].isupper() and left_lines[line].isalpha() and not left_lines[line+1].isupper():
+                            manufacturer = left_lines[line]
+                            # print("manufacturer", manufacturer)
+                        elif all(c.isalpha() or c.isspace() for c in left_lines[line]):
+                            car_model = left_lines[line]
+                            # print("car model", car_model)
+                            
+                        # insert new row
+                        new_row = [car_type, manufacturer, car_model, trans, eng_size, cyl, mpg_comb, mpg_city,
+                                   mpg_hwy, cost, ghg, notes]
+                        if None in new_row:
+                            continue
+                        else:
+                            df.loc[len(df)] = new_row
+                            
+                            # reset all vars except car type and manufacturer
+                            car_model = None
+                            trans = None
+                            eng_size = None 
+                            cyl = None 
+                            mpg_comb = None 
+                            mpg_city = None 
+                            mpg_hwy = None 
+                            cost = None 
+                            ghg = None 
+                            notes = None
+                    
+                    print(df.head(10))
+                    exit()
 
 data = read_pdfs(files)

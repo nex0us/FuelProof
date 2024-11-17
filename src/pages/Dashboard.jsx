@@ -161,7 +161,7 @@ const Dashboard = () => {
                 height: "100%", // Ensure the CardContent takes the full height
               }}
             >
-              <button onClick={refreshData} className="btn">
+              <button onClick={refreshData} className="btn px-1 py-1">
                 Refresh Data
               </button>
             </CardContent>

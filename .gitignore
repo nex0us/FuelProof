@@ -1,5 +1,6 @@
 .DS_store
 .env
+src/firebase/firebase.js
 
 # Logs
 logs
@@ -25,3 +26,4 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+src/firebase/firebase.js

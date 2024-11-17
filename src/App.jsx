@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import LandingPage from "./pages/LandingPage";
+import DataDisplay from "./pages/DataDisplay"
 import { AuthProvider } from "./contexts/authContext";
 import PrivateRoute from "./components/PrivateRoute";
 
@@ -35,6 +36,17 @@ function App() {
                 <>
                   <Navbar />
                   <Dashboard />
+                </>
+              </PrivateRoute>
+            }
+          />
+          <Route 
+            path='/data'
+            element={
+              <PrivateRoute>
+                <>
+                  <Navbar />
+                  <DataDisplay />
                 </>
               </PrivateRoute>
             }

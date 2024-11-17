@@ -5,7 +5,9 @@ export default {
       extend: {
           colors: {
             toyotared: '#EB0A1E',
+            darktoyotared: '#990511',
             toyotagray: '#58595B', 
+            offwhite: '#fcf7f1',
           },
       },
   },

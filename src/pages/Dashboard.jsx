@@ -32,7 +32,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
         try {
-            const response = await fetch('localhost:3001/api/data');
+            const response = await fetch('/api/data');
             const result = await response.json();
             setData(result);
         } catch (err) {

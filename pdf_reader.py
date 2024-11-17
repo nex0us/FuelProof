@@ -46,7 +46,7 @@ def read_pdfs(files):
                     right_text = right_column.extract_text()
                     
                     # print(left_text + right_text)
-                    print(left_text)
+                    # print(left_text)
                     
                     # populate dataframe
                     # split text into lines
@@ -68,6 +68,7 @@ def read_pdfs(files):
                     ghg = None 
                     notes = None
                     for line in range(5, len(left_lines)): # we know first 5 lines are just labels
+                        # print(left_lines[line])
                         # check if current line is data, every data line has a $ in it
                         if "$" in left_lines[line]:
                             data = left_lines[line].split()
@@ -80,27 +81,23 @@ def read_pdfs(files):
                             cost = data[5]
                             ghg = data[6]
                             notes = data[7:]
-                        # if current line and next line all caps then that's a car type line
-                        elif left_lines[line].isupper() and left_lines[line+1].isupper() and left_lines[line+1].isalpha():
-                            car_type = left_lines[line]
-                            print(left_lines[line+1], left_lines[line+1].isupper())
-                            print("car type", car_type)
-                        elif left_lines[line].isupper() and left_lines[line].isalpha() and not left_lines[line+1].isupper():
-                            manufacturer = left_lines[line]
-                            # print("manufacturer", manufacturer)
-                        elif all(c.isalpha() or c.isspace() for c in left_lines[line]):
-                            car_model = left_lines[line]
-                            # print("car model", car_model)
                             
-                        # insert new row
-                        new_row = [car_type, manufacturer, car_model, trans, eng_size, cyl, mpg_comb, mpg_city,
-                                   mpg_hwy, cost, ghg, notes]
-                        if None in new_row:
-                            continue
-                        else:
+                            # insert new row after data line encountered
+                            if not car_type:
+                                car_type = df.iloc[-1, 0]
+                            if not manufacturer:
+                                manufacturer = df.iloc[-1, 1]
+                            # if not car_model:
+                            #     car_model = df.iloc[-1, 2]
+                            #     print(car_model)
+                                  
+                            new_row = [car_type, manufacturer, car_model, trans, eng_size, cyl, mpg_comb, mpg_city, 
+                                       mpg_hwy, cost, ghg, notes]
                             df.loc[len(df)] = new_row
-                            
+                                
                             # reset all vars except car type and manufacturer
+                            car_type = None
+                            manufacturer = None
                             car_model = None
                             trans = None
                             eng_size = None 
@@ -111,8 +108,21 @@ def read_pdfs(files):
                             cost = None 
                             ghg = None 
                             notes = None
+                        # if current line and next line all caps then that's a car type line
+                        elif left_lines[line].isupper() and left_lines[line+1].isupper() and left_lines[line+1].isalpha():
+                            car_type = left_lines[line]
+                            # print(left_lines[line+1], left_lines[line+1].isupper())
+                            # print("car type", car_type)
+                        elif left_lines[line].isupper() and not any(c.isnumeric() for c in left_lines[line]):
+                            manufacturer = left_lines[line]
+                            # print("manufacturer", manufacturer)
+                        else:
+                            car_model = left_lines[line]
+                            # print("car model", car_model)
+                            # print(left_lines[line].isupper(), left_lines[line].isalpha(), left_lines[line+1].isupper())
+                            
                     
-                    print(df.head(10))
+                    print(df)
                     exit()
 
 data = read_pdfs(files)
